@@ -11,13 +11,15 @@ app = Flask(__name__)
 LOG = create_logger(app)
 LOG.setLevel(logging.INFO)
 
+
 def scale(payload):
     """Scales Payload"""
 
     LOG.info("Scaling Payload: %s payload")
-    scaler = StandardScaler().fit(payload)
+    scaler = StandardScaler(with_mean=False).fit(payload)
     scaled_adhoc_predict = scaler.transform(payload)
     return scaled_adhoc_predict
+
 
 @app.route("/")
 def home():
@@ -25,6 +27,8 @@ def home():
     return html.format(format)
 
 # TO DO:  Log out the prediction value
+
+
 @app.route("/predict", methods=['POST'])
 def predict():
     """Performs an sklearn prediction
@@ -57,6 +61,7 @@ def predict():
 
     try:
         clf = joblib.load("boston_housing_prediction.joblib")
+        clf = clf[0][0]
     except:
         LOG.info("JSON payload: %s json_payload")
         return "Model not loaded"
@@ -68,6 +73,7 @@ def predict():
     scaled_payload = scale(inference_payload)
     prediction = list(clf.predict(scaled_payload))
     return jsonify({'prediction': prediction})
+
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000, debug=True)
