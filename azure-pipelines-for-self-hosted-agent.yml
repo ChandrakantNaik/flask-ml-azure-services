@@ -57,6 +57,7 @@ stages:
           - upload: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
             displayName: "myStep 5 - Upload package"
             artifact: drop
+
   - stage: Deploy
     displayName: 'Deploy Web App'
     dependsOn: Build
@@ -70,7 +71,7 @@ stages:
           deploy:
             steps:
             - task: AzureWebApp@1
-              displayName: 'Deploy Azure Web App : flask-ml-service'
+              displayName: 'Deploy Azure Web App : flask-ml-app-services'
               inputs:
                 azureSubscription: $(azureServiceConnectionId)
                 appName: $(webAppName)
